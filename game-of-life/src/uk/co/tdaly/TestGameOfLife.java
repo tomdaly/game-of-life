@@ -31,6 +31,14 @@ public class TestGameOfLife {
         assertThat(game.getLiveCells(), is(equalTo(1)));
     }
 
+    @Test
+    public void testNumNeighbours() {
+        game = new GameOfLife(3, 3);
+        game.setCell(0, 0, true);
+        game.setCell(0, 1, true);
+        assertThat(game.getNumNeighbours(0, 0), is(equalTo(1)));
+    }
+
     // Test Scenarios
     // - = empty cell
     // # = live cell
