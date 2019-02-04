@@ -1,5 +1,6 @@
 package uk.co.tdaly;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameOfLife {
@@ -62,27 +63,38 @@ public class GameOfLife {
     }
 
     public void next() {
+        boolean[][] boardCopy = Arrays.stream(getBoard())
+                                      .map(boolean[]::clone)
+                                      .toArray(boolean[][]::new);
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getColumns(); col++) {
-                int neighbours = getNumNeighbours(row, col);
+                int neighbours = getNumNeighbours(row, col, boardCopy);
+                if (neighbours < 2) {  // underpopulation
+                    setCell(row, col, false);
+                } else if (neighbours > 3) { // overcrowding
+                    setCell(row, col, false);
+                } else if (neighbours == 3) { // creation
+                    setCell(row, col, true);
+                } // survival leaves cells in same state
             }
         }
+        numIterations++;
     }
 
-    public int getNumNeighbours(int row, int col) {
+    public int getNumNeighbours(int row, int col, boolean[][] iterBoard) {
         int minRow, maxRow, minCol, maxCol;
         minRow = row - 1;
         maxRow = row + 1;
         minCol = col - 1;
         maxCol = col + 1;
-        if (row - 1 < 0) {
+        if (minRow < 0) {
             minRow = 0;
-        } else if (row + 1 >= getRows()) {
+        } else if (maxRow >= getRows()) {
             maxRow = getRows() - 1;
         }
-        if (col - 1 < 0) {
+        if (minCol < 0) {
             minCol = 0;
-        } else if (col + 1 >= getColumns()) {
+        } else if (maxCol >= getColumns()) {
             maxCol = getColumns() - 1;
         }
 
@@ -92,8 +104,11 @@ public class GameOfLife {
                 if (i == row && j == col) {
                     continue;
                 }
-                if (getBoard()[i][j]) {
+                if (iterBoard[i][j]) {
                     neighbours++;
+                }
+                if (neighbours > 3) {
+                    return neighbours;
                 }
             }
         }

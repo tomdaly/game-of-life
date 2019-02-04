@@ -36,7 +36,7 @@ public class TestGameOfLife {
         game = new GameOfLife(3, 3);
         game.setCell(0, 0, true);
         game.setCell(0, 1, true);
-        assertThat(game.getNumNeighbours(0, 0), is(equalTo(1)));
+        assertThat(game.getNumNeighbours(0, 0, game.getBoard()), is(equalTo(1)));
     }
 
     // Test Scenarios
@@ -116,6 +116,19 @@ public class TestGameOfLife {
         assertThat(game.getCell(2, 2), is(false));
         game.next();
         assertThat(game.getCell(1, 1), is(true));
-        assertThat(game.getCell(2, 2), is(false));
+        assertThat(game.getCell(2, 2), is(true));
+    }
+
+    //  ##-    ##-
+    //  #-- -> ##-
+    //  ---    ---
+    @Test
+    public void testCreation() {
+        game = new GameOfLife(3, 3);
+        game.setCell(0, 0, true);
+        game.setCell(0, 1, true);
+        game.setCell(1, 0, true);
+        game.next();
+        assertThat(game.getCell(1,1), is(equalTo(true)));
     }
 }
