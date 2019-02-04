@@ -21,11 +21,11 @@ public class GameOfLife {
         return this.board;
     }
 
-    private int getRows() {
+    public int getRows() {
         return this.rows;
     }
 
-    private int getColumns() {
+    public int getColumns() {
         return this.columns;
     }
 
