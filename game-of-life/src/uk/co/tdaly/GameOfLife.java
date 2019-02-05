@@ -15,7 +15,7 @@ public class GameOfLife {
         board = new boolean[rows][columns]; 
         this.rows = rows;
         this.columns = columns;
-        iterationPeriod = 500; // default 500ms
+        iterationPeriod = 1000; // default 1000ms
     }
 
     public boolean[][] getBoard() {

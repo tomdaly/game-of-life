@@ -13,6 +13,9 @@ public class GUI extends JFrame{
     private GameIterator iterator;
     private JScrollBar timerScrollbar;
     private JButton stepButton;
+    private JLabel iterationsLabel;
+    private JLabel periodLabel;
+    private JLabel cellsLabel;
 
     public GUI(GameOfLife game) {
         super("Game of Life");
@@ -26,16 +29,21 @@ public class GUI extends JFrame{
         setResizable(false);
 
         iterator = new GameIterator();
-        game.addRandomCells(20);
     }
 
-    public void initialiseComponents() {
+    private void initialiseComponents() {
         mainPanel = new MainPanel();
+        iterationsLabel = new JLabel("Iteration 0");
+        periodLabel = new JLabel(game.getIterationPeriod() + "ms");
+        cellsLabel = new JLabel("Live cells " + game.getLiveCells());
+        JPanel labelPanel = new JPanel();
+        labelPanel.add(iterationsLabel, BorderLayout.LINE_START);
+        labelPanel.add(cellsLabel, BorderLayout.CENTER);
+        labelPanel.add(periodLabel, BorderLayout.LINE_END);
 
         stepButton = new JButton("Step");
         stepButton.addActionListener( e -> {
-            game.next();
-            mainPanel.repaint();
+            iterator.iterate();
         });
         JButton playButton = new JButton("Play");
         playButton.addActionListener( e -> {
@@ -50,11 +58,13 @@ public class GUI extends JFrame{
         buttonPanel.add(pauseButton, BorderLayout.CENTER);
         buttonPanel.add(stepButton, BorderLayout.LINE_END);
 
-        timerScrollbar = new JScrollBar(JScrollBar.HORIZONTAL, 1, 1, 0, 9);
+        timerScrollbar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 10);
 
-        add(mainPanel, BorderLayout.PAGE_START);
-        add(buttonPanel, BorderLayout.CENTER);
-        add(timerScrollbar, BorderLayout.PAGE_END);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        add(labelPanel);
+        add(mainPanel);
+        add(buttonPanel);
+        add(timerScrollbar);
     }
 
     class MainPanel extends JPanel {
@@ -90,8 +100,15 @@ public class GUI extends JFrame{
                 pause();
                 play();
             }
+            iterate();
+        }
+
+        private void iterate() {
             game.next();
             mainPanel.repaint();
+            iterationsLabel.setText("Iteration " + game.getNumIterations());
+            periodLabel.setText("Period " + game.getIterationPeriod() + "ms");
+            cellsLabel.setText("Live cells " + game.getLiveCells());
         }
 
         private void play() {
@@ -102,9 +119,7 @@ public class GUI extends JFrame{
         }
 
         private void pause() {
-            if (iterationTimer != null) {
-                iterationTimer.cancel();
-            }
+            iterationTimer.cancel();
             stepButton.setEnabled(true);
         }
     }
