@@ -11,6 +11,8 @@ public class GUI extends JFrame{
     private MainPanel mainPanel;
     private Timer iterationTimer;
     private GameIterator iterator;
+    private JScrollBar timerScrollbar;
+    private JButton stepButton;
 
     public GUI(GameOfLife game) {
         super("Game of Life");
@@ -18,43 +20,44 @@ public class GUI extends JFrame{
 
         initialiseComponents();
         pack();
+        validate();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
+
+        iterator = new GameIterator();
         game.addRandomCells(20);
     }
 
     public void initialiseComponents() {
         mainPanel = new MainPanel();
-        JButton stepButton = new JButton("Step");
+
+        stepButton = new JButton("Step");
         stepButton.addActionListener( e -> {
             game.next();
             mainPanel.repaint();
         });
         JButton playButton = new JButton("Play");
         playButton.addActionListener( e -> {
-            iterationTimer = new Timer();
-            iterator = new GameIterator();
-            iterationTimer.scheduleAtFixedRate(iterator, 0, game.getIterationPeriod());
-            stepButton.setEnabled(false);
+            iterator.play();
         });
         JButton pauseButton = new JButton("Pause");
         pauseButton.addActionListener( e -> {
-            if (iterationTimer != null) {
-                iterationTimer.cancel();
-            }
-            stepButton.setEnabled(true);
+            iterator.pause();
         });
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(playButton, BorderLayout.LINE_START);
         buttonPanel.add(pauseButton, BorderLayout.CENTER);
         buttonPanel.add(stepButton, BorderLayout.LINE_END);
-        add(mainPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.PAGE_END);
+
+        timerScrollbar = new JScrollBar(JScrollBar.HORIZONTAL, 1, 1, 0, 9);
+
+        add(mainPanel, BorderLayout.PAGE_START);
+        add(buttonPanel, BorderLayout.CENTER);
+        add(timerScrollbar, BorderLayout.PAGE_END);
     }
 
     class MainPanel extends JPanel {
-
         private int cellWidth = 25;
         private int cellHeight = 25;
 
@@ -81,8 +84,28 @@ public class GUI extends JFrame{
     class GameIterator extends TimerTask {
         @Override
         public void run() {
+            int period = 1000 - timerScrollbar.getValue() * 100;
+            if (period != game.getIterationPeriod()) {
+                game.setIterationPeriod(period);
+                pause();
+                play();
+            }
             game.next();
             mainPanel.repaint();
+        }
+
+        private void play() {
+            iterationTimer = new Timer();
+            iterator = new GameIterator();
+            iterationTimer.scheduleAtFixedRate(iterator, 0, game.getIterationPeriod());
+            stepButton.setEnabled(false);
+        }
+
+        private void pause() {
+            if (iterationTimer != null) {
+                iterationTimer.cancel();
+            }
+            stepButton.setEnabled(true);
         }
     }
 }
