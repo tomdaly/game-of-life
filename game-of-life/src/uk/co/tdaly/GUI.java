@@ -2,34 +2,55 @@ package uk.co.tdaly;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GUI extends JFrame{
 
     private GameOfLife game;
     private MainPanel mainPanel;
+    private Timer iterationTimer;
+    private GameIterator iterator;
 
     public GUI(GameOfLife game) {
         super("Game of Life");
         this.game = game;
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        mainPanel = new MainPanel();
-        add(mainPanel, BorderLayout.CENTER);
-        JButton stepButton = new JButton("Step");
-        stepButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                game.next();
-                mainPanel.repaint();
-            }
-        });
-        add(stepButton, BorderLayout.PAGE_END);
+        initialiseComponents();
         pack();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-
+        setResizable(false);
         game.addRandomCells(20);
+    }
+
+    public void initialiseComponents() {
+        mainPanel = new MainPanel();
+        JButton stepButton = new JButton("Step");
+        stepButton.addActionListener( e -> {
+            game.next();
+            mainPanel.repaint();
+        });
+        JButton playButton = new JButton("Play");
+        playButton.addActionListener( e -> {
+            iterationTimer = new Timer();
+            iterator = new GameIterator();
+            iterationTimer.scheduleAtFixedRate(iterator, 0, game.getIterationPeriod());
+            stepButton.setEnabled(false);
+        });
+        JButton pauseButton = new JButton("Pause");
+        pauseButton.addActionListener( e -> {
+            if (iterationTimer != null) {
+                iterationTimer.cancel();
+            }
+            stepButton.setEnabled(true);
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(playButton, BorderLayout.LINE_START);
+        buttonPanel.add(pauseButton, BorderLayout.CENTER);
+        buttonPanel.add(stepButton, BorderLayout.LINE_END);
+        add(mainPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.PAGE_END);
     }
 
     class MainPanel extends JPanel {
@@ -54,6 +75,14 @@ public class GUI extends JFrame{
                     }
                 }
             }
+        }
+    }
+
+    class GameIterator extends TimerTask {
+        @Override
+        public void run() {
+            game.next();
+            mainPanel.repaint();
         }
     }
 }

@@ -9,12 +9,13 @@ public class GameOfLife {
     private int rows;
     private int columns;
     private int numIterations;
-    private float iterationPeriod;
+    private int iterationPeriod;
 
     public GameOfLife(int rows, int columns) {
         board = new boolean[rows][columns]; 
         this.rows = rows;
         this.columns = columns;
+        iterationPeriod = 500; // default 500ms
     }
 
     public boolean[][] getBoard() {
@@ -33,11 +34,11 @@ public class GameOfLife {
         return this.numIterations;
     }
 
-    public float getIterationPeriod() {
+    public int getIterationPeriod() {
         return iterationPeriod;
     }
 
-    public void setIterationPeriod(float period) {
+    public void setIterationPeriod(int period) {
         this.iterationPeriod = period;
     }
 
