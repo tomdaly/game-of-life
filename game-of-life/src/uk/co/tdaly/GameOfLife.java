@@ -3,14 +3,24 @@ package uk.co.tdaly;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Main Game class
+ * Contains board, algorithms and helper functions for complete game
+ *
+ */
 public class GameOfLife {
-
     private boolean[][] board;
     private int rows;
     private int columns;
     private int numIterations;
     private int iterationPeriod;
 
+    /**
+     * Constructor
+     * Creates game board and initialises row and column values
+     * @param rows amount of rows on game board
+     * @param columns amount of columns on game board
+     */
     public GameOfLife(int rows, int columns) {
         board = new boolean[rows][columns]; 
         this.rows = rows;
@@ -42,6 +52,12 @@ public class GameOfLife {
         this.iterationPeriod = period;
     }
 
+    /**
+     * Sets state of cell
+     * @param row row of cell to set
+     * @param col column of cell to set
+     * @param state true is live cell, false is dead cell
+     */
     public void setCell(int row, int col, boolean state) {
         this.board[row][col] = state;
     }
@@ -50,6 +66,10 @@ public class GameOfLife {
         return getBoard()[row][col];
     }
 
+    /**
+     * Gets number of live cells on the board
+     * @return amount of live cells on board
+     */
     public int getLiveCells() {
         int liveCells = 0;
         for (int i = 0; i < getRows(); i++) {
@@ -61,7 +81,11 @@ public class GameOfLife {
         }
         return liveCells;
     }
-   
+
+    /**
+     * Adds a number of cells to the board in random locations
+     * @param numCells number of cells to place
+     */
     public void addRandomCells(int numCells) {
         int rndRow;
         int rndCol;
@@ -75,6 +99,12 @@ public class GameOfLife {
         }
     }
 
+    /**
+     * Iterates board once
+     * Creates a shallow copy of the board to be used to check neighbouring cells
+     * between state changes of original board, and sets cell state based on neighbours
+     * and set scenarios
+     */
     public void next() {
         boolean[][] boardCopy = Arrays.stream(getBoard())
                                       .map(boolean[]::clone)
@@ -94,26 +124,17 @@ public class GameOfLife {
         numIterations++;
     }
 
+    /**
+     * Gets number of neighbours in 3x3 grid for each cell, excluding self
+     * @param row row of cell to check
+     * @param col column of cell to check
+     * @param iterBoard current iteration's board state
+     * @return number of neighbours for given cell
+     */
     public int getNumNeighbours(int row, int col, boolean[][] iterBoard) {
-        int minRow, maxRow, minCol, maxCol;
-        minRow = row - 1;
-        maxRow = row + 1;
-        minCol = col - 1;
-        maxCol = col + 1;
-        if (minRow < 0) {
-            minRow = 0;
-        } else if (maxRow >= getRows()) {
-            maxRow = getRows() - 1;
-        }
-        if (minCol < 0) {
-            minCol = 0;
-        } else if (maxCol >= getColumns()) {
-            maxCol = getColumns() - 1;
-        }
-
         int neighbours = 0;
-        for (int i = minRow; i <= maxRow; i++) {
-            for (int j = minCol; j <= maxCol; j++) {
+        for (int i = Math.max(0, row - 1); i <= Math.min(getRows() - 1, row + 1); i++) {
+            for (int j = Math.max(0, col - 1); j <= Math.min(getColumns() - 1, col + 1); j++) {
                 if (i == row && j == col) {
                     continue;
                 }

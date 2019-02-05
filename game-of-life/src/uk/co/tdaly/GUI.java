@@ -5,6 +5,11 @@ import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * GUI for game, consisting of a frame with four main panels for labels, the game board,
+ * play/pause/step buttons and a period scrollbar
+ *
+ */
 public class GUI extends JFrame{
 
     private GameOfLife game;
@@ -17,6 +22,11 @@ public class GUI extends JFrame{
     private JLabel periodLabel;
     private JLabel cellsLabel;
 
+    /**
+     * Constructor
+     * Creates JFrame with components and creates a new game iterator
+     * @param game
+     */
     public GUI(GameOfLife game) {
         super("Game of Life");
         this.game = game;
@@ -31,11 +41,16 @@ public class GUI extends JFrame{
         iterator = new GameIterator();
     }
 
+    /**
+     * Creates all components for frame
+     * Creates main panel for game board, labels panel for 'iteration', 'live cells' and 'period' labels,
+     * buttons panel for 'play', 'pause' and 'step' buttons, and a scrollbar component to change the iteration period
+     */
     private void initialiseComponents() {
         mainPanel = new MainPanel();
         iterationsLabel = new JLabel("Iteration 0");
-        periodLabel = new JLabel(game.getIterationPeriod() + "ms");
         cellsLabel = new JLabel("Live cells " + game.getLiveCells());
+        periodLabel = new JLabel(game.getIterationPeriod() + "ms");
         JPanel labelPanel = new JPanel();
         labelPanel.add(iterationsLabel, BorderLayout.LINE_START);
         labelPanel.add(cellsLabel, BorderLayout.CENTER);
@@ -67,15 +82,26 @@ public class GUI extends JFrame{
         add(timerScrollbar);
     }
 
+    /**
+     * Game board panel to draw game each iteration
+     */
     class MainPanel extends JPanel {
         private int cellWidth = 25;
         private int cellHeight = 25;
 
+        /**
+         * Constructor
+         * Sets size of panel and background colour
+         */
         MainPanel() {
             setPreferredSize(new Dimension(game.getRows() * 25, game.getRows() * 25));
             setBackground(Color.WHITE);
         }
 
+        /**
+         * Draws live cells on panel each iteration
+         * @param g graphics
+         */
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -91,7 +117,13 @@ public class GUI extends JFrame{
         }
     }
 
+    /**
+     * Iterator timer task to increment iterations and update game panel
+     */
     class GameIterator extends TimerTask {
+        /**
+         * Gets period from scrollbar and iterates game, called every period
+         */
         @Override
         public void run() {
             int period = 1000 - timerScrollbar.getValue() * 100;
@@ -103,6 +135,9 @@ public class GUI extends JFrame{
             iterate();
         }
 
+        /**
+         * Iterates game once, repaints main board and changes text of labels
+         */
         private void iterate() {
             game.next();
             mainPanel.repaint();
@@ -111,6 +146,10 @@ public class GUI extends JFrame{
             cellsLabel.setText("Live cells " + game.getLiveCells());
         }
 
+        /**
+         * Sets board into play mode when 'play' button pressed, schedules timer run() function
+         * Disables 'step' button during play
+         */
         private void play() {
             iterationTimer = new Timer();
             iterator = new GameIterator();
@@ -118,6 +157,9 @@ public class GUI extends JFrame{
             stepButton.setEnabled(false);
         }
 
+        /**
+         * Pauses game by cancelling timer
+         */
         private void pause() {
             iterationTimer.cancel();
             stepButton.setEnabled(true);

@@ -6,6 +6,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+/**
+ * Unit tests for GameOfLife class, including tests
+ * for possible scenarios
+ */
 public class TestGameOfLife {
 
     private GameOfLife game;
