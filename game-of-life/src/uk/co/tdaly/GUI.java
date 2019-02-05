@@ -86,15 +86,15 @@ public class GUI extends JFrame{
      * Game board panel to draw game each iteration
      */
     class MainPanel extends JPanel {
-        private int cellWidth = 25;
-        private int cellHeight = 25;
+        private int cellWidth = 20;
+        private int cellHeight = 20;
 
         /**
          * Constructor
          * Sets size of panel and background colour
          */
         MainPanel() {
-            setPreferredSize(new Dimension(game.getRows() * 25, game.getRows() * 25));
+            setPreferredSize(new Dimension(game.getRows() * cellWidth, game.getRows() * cellHeight));
             setBackground(Color.WHITE);
         }
 

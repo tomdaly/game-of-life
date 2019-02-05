@@ -1,6 +1,7 @@
 package uk.co.tdaly;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Main class for opening application and getting initial input of dimensions and random live cells
@@ -9,7 +10,6 @@ import javax.swing.*;
 public class Main {
 
     private static final int MIN_DIMENSION = 8;
-    private static final int MAX_DIMENSION = 50;
     private static final int MIN_CELLS = 1;
 
     /**
@@ -19,6 +19,14 @@ public class Main {
      * @param args passed arguments
      */
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) { }
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int MAX_DIMENSION = (int)((Math.min(screenSize.height, screenSize.width) - 150) / 20); // max depends on screen resolution
+        if (MAX_DIMENSION < MIN_DIMENSION) {
+            System.exit(1);
+        }
         boolean validInputs = false;
         int dimension, randomCells;
         dimension = randomCells = 0;
