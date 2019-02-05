@@ -2,6 +2,8 @@ package uk.co.tdaly;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GUI extends JFrame{
 
@@ -12,16 +14,32 @@ public class GUI extends JFrame{
         super("Game of Life");
         this.game = game;
 
-        setSize(25 * game.getRows(), 25 * game.getColumns());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         mainPanel = new MainPanel();
-        add(mainPanel);
+        add(mainPanel, BorderLayout.CENTER);
+        JButton stepButton = new JButton("Step");
+        stepButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.next();
+                mainPanel.repaint();
+            }
+        });
+        add(stepButton, BorderLayout.PAGE_END);
+        pack();
         setVisible(true);
+
+        game.addRandomCells(20);
     }
 
     class MainPanel extends JPanel {
+
+        private int cellWidth = 25;
+        private int cellHeight = 25;
+
         MainPanel() {
-            setPreferredSize(new Dimension(getWidth() - 10, getHeight() - 10));
+            setPreferredSize(new Dimension(game.getRows() * 25, game.getRows() * 25));
+            setBackground(Color.WHITE);
         }
 
         @Override
@@ -29,6 +47,13 @@ public class GUI extends JFrame{
             super.paintComponent(g);
 
             g.setColor(Color.BLACK);
+            for (int row = 0; row < game.getRows(); row++) {
+                for (int col = 0; col < game.getColumns(); col++) {
+                    if (game.getCell(row, col)) {
+                        g.fillRect(row * cellWidth, col * cellHeight, cellWidth, cellHeight);
+                    }
+                }
+            }
         }
     }
 }

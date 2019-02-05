@@ -29,6 +29,18 @@ public class GameOfLife {
         return this.columns;
     }
 
+    public int getNumIterations() {
+        return this.numIterations;
+    }
+
+    public float getIterationPeriod() {
+        return iterationPeriod;
+    }
+
+    public void setIterationPeriod(float period) {
+        this.iterationPeriod = period;
+    }
+
     public void setCell(int row, int col, boolean state) {
         this.board[row][col] = state;
     }
@@ -41,7 +53,7 @@ public class GameOfLife {
         int liveCells = 0;
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
-                if (getBoard()[i][j]) {
+                if (getCell(i, j)) {
                     liveCells++;
                 }
             }
